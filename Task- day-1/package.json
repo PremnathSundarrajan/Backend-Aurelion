@@ -1,0 +1,17 @@
+{
+  "name": "task--day-1",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "1.0.2": "^1.0.0",
+    "prem_cal": "^1.0.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "description": ""
+}
