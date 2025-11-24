@@ -1,0 +1,40 @@
+// prisma/schema.prisma
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url  	    = env("DATABASE_URL")
+  // uncomment next line if you use Prisma <5.10
+  // directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+
+model Property {
+  property_id       String              @id @default(uuid())
+  property_title    String
+  property_rating   String
+  property_category Property_Category[]
+  property_location Property_Location?
+}
+
+model Property_Category {
+  property_category_id  String   @id @default(uuid())
+  property_photo        String
+  property_member_limit String
+  property_bedroom      Int
+  property_bathroom     Int
+  property_price        String
+  property_id           String
+  property              Property @relation(fields: [property_id], references: [property_id])
+}
+
+model Property_Location {
+  property_location_id String   @id @default(uuid())
+  main_branch          String
+  available_locations  String
+  property_id          String   @unique
+  property             Property @relation(fields: [property_id], references: [property_id])
+}
