@@ -1,5 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const z = require("zod");
 const {
   DB_getAllStudent,
   DB_getParticularStudent,
@@ -9,6 +10,30 @@ const {
   DB_deleteStudent,
   DB_check,
 } = require('../service/studentService')
+
+const getParticularStudentSchema = z.object({
+  id:z.string()
+});
+
+const addStudentSchema = z.object({
+  roll_no : z.string(),
+  name: z.string(),
+  dob: z.string(),
+  class:z.string()
+})
+
+const updateStudentSchema = z.object({
+  roll_no : z.string(),
+  name: z.string(),
+  dob: z.string(),
+  class:z.string()
+})
+
+const deleteStudentSchema = z.object({
+  roll_no : z.string()
+})
+
+
 const getAllStudent = async (req, res) => {
   const data = await DB_getAllStudent();
 
@@ -18,7 +43,7 @@ const getAllStudent = async (req, res) => {
 };
 
 const getParticularStudent = async (req, res) => {
-  const { id } = req.params;
+  const { id } = getParticularStudentSchema.parse(req.params);
   const data = await DB_getParticularStudent(id);
 
   console.log(data);
@@ -26,7 +51,7 @@ const getParticularStudent = async (req, res) => {
 };
 
 const addStudent = async (req, res) => {
-  const data = req.body;
+  const data =addStudentSchema.parse(req.body);
   console.log(data);
 
   const create = await DB_addStudent(data);
@@ -34,7 +59,7 @@ const addStudent = async (req, res) => {
 };
 
 const updateStudent = async (req, res) => {
-  const data = req.body;
+  const data = updateStudentSchema.parse(req.body);
   console.log(data);
   const get = await DB_check(data);
 
@@ -61,7 +86,7 @@ const particularUpdateStudent = async (req, res) => {
 };
 
 const deleteStudent = async (req, res) => {
-  const data = req.query;
+  const data = deleteStudentSchema.parse(req.query);
   const get = await DB_check(data);
 
   if (!get) res.send("Not found to del");

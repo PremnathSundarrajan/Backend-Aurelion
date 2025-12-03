@@ -10,6 +10,34 @@ const {
   DB_deleteRestaurant,
   DB_check
 } = require('../service/restaurantService')
+
+const z = require("zod");
+const getParticularRestaurantSchema = z.object({
+    id: z.string().uuid()
+})
+
+const addRestaurantSchema = z.object({
+  restaurant_image_url: z.string().url(),
+  restaurant_price:z.string(),
+  restaurant_title:z.string(),
+  restaurant_rating: z.string(),
+  restaurant_category_group:z.string(),
+  restaurant_location:z.string()
+});
+
+const updateRestaurantSchema = z.object({
+  restaurant_id : z.string().uuid(),
+  restaurant_image_url: z.string().url(),
+  restaurant_price:z.string(),
+  restaurant_title:z.string(),
+  restaurant_rating: z.string(),
+  restaurant_category_group:z.string(),
+  restaurant_location:z.string()
+});
+
+const deleteRestaurantSchema = z.object({
+  restaurant_id : z.string()
+})
 const gettAllRestaurant = async (req, res) => {
   try {
     //Data from Frontend
@@ -31,7 +59,7 @@ const gettAllRestaurant = async (req, res) => {
 const getParticularRestaurant = async (req, res) => {
   try {
     //Data from Frontend
-    const { id } = req.headers;
+    const { id } = getParticularRestaurantSchema.parse(req.headers);
 
     //DB logic
     const data = await DB_getParticularRestaurant(id);
@@ -50,7 +78,7 @@ const getParticularRestaurant = async (req, res) => {
 const addRestaurant = async (req, res) => {
   try {
     //Data from Frontend
-    const data = req.body;
+    const data = addRestaurantSchema.parse(req.body);
 
     //DB logic
     const add = await DB_addRestaurant(data);
@@ -67,7 +95,7 @@ const addRestaurant = async (req, res) => {
 const updateRestaurant = async (req, res) => {
   try {
     //Data from Frontend
-    const data = req.body;
+    const data = updateRestaurantSchema.parse(req.body);
 
     //DB logic
     const check =await  DB_check(data);

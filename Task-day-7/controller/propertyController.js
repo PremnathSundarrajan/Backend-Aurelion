@@ -20,6 +20,67 @@ const {
   DB_categoryCheck,
   DB_locationCheck
 } = require('../service/propertyService')
+
+const z = require("zod");
+const getParticularPropertySchema = z.object({
+  id: z.string(),
+});
+
+const addPropertiesSchema = z.object({
+  property_title: z.string(),
+  property_rating: z.string(),
+});
+
+const addCategoriesSchema = z.object({
+  property_photo: z.string().url(),
+  property_member_limit: z.string(),
+  property_bedroom: z.int(),
+  property_bathroom: z.int(),
+  property_price: z.string(),
+  property_id: z.string().url(),
+});
+
+const addLocationsSchema = z.object({
+  main_branch: z.string(),
+  available_locations: z.string(),
+  property_id: z.string(),
+});
+
+const updatePropertiesSchema = z.object({
+  property_id: z.string().uuid(),
+  property_title: z.string(),
+  property_rating: z.string(),
+});
+
+const updateCategoriesSchema = z.object({
+  property_category_id: z.string().uuid(),
+  property_photo: z.string().url(),
+  property_member_limit: z.string(),
+  property_bedroom: z.number().int(),
+  property_bathroom:z.number().int(),
+  property_price: z.string(),
+  property_id: z.string().url(),
+});
+
+const updateLocationsSchema = z.object({
+  property_location_id: z.string().uuid(),
+  main_branch: z.string(),
+  available_locations: z.string(),
+  property_id: z.string(),
+});
+
+const deletePropertiesSchema = z.object({
+  id: z.string().uuid(),
+});
+
+const deleteCategoriesSchema = z.object({
+  id: z.string().uuid(),
+});
+
+const deleteLocationsSchema = z.object({
+  id: z.string().uuid(),
+});
+
 const getAllProperty = async (req, res) => {
   try {
     const data = await DB_getAllProperty();
@@ -34,7 +95,7 @@ const getAllProperty = async (req, res) => {
 
 const getParticularProperty = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { id } =getParticularPropertySchema.parse(req.params);
 
     const data = await DB_getParticularProperty(id);
 
@@ -46,7 +107,7 @@ const getParticularProperty = async (req, res) => {
 
 const addProperties = async (req, res) => {
   try {
-    const body = req.body;
+    const body =addPropertiesSchema.parse(req.body);
 
     const data =await  DB_addProperties(body)
     console.log(data);
@@ -61,7 +122,7 @@ const addProperties = async (req, res) => {
 
 const addCategories = async (req, res) => {
   try {
-    const body = req.body;
+    const body =addCategoriesSchema.parse(req.body);
 
     const data = await DB_addCategories();
     console.log(data);
@@ -76,7 +137,7 @@ const addCategories = async (req, res) => {
 
 const addLocations = async (req, res) => {
   try {
-    const body = req.body;
+    const body =addLocationsSchema.parse(req.body);
 
     const data = await DB_addLocations(body);
     console.log(data);
@@ -91,7 +152,7 @@ const addLocations = async (req, res) => {
 
 const updateProperties = async (req, res) => {
   try {
-    const body = req.body;
+    const body =updatePropertiesSchema.parse(req.body);
     const check = await DB_propertyCheck(body);
     if (!check) {
       res.status(404).json({ message: "Property missing" });
@@ -108,7 +169,7 @@ const updateProperties = async (req, res) => {
 
 const updateCategories = async (req, res) => {
   try {
-    const body = req.body;
+    const body =updateCategoriesSchema.parse(req.body);
     const check =await DB_categoryCheck(body);
     if (!check) {
       res.status(404).json({ message: "Property missing" });
@@ -126,7 +187,7 @@ const updateCategories = async (req, res) => {
 
 const updateLocations = async (req, res) => {
   try {
-    const body = req.body;
+    const body =updateLocationsSchema.parse(req.body);
     const check = await DB_locationCheck(body);
     if (!check) {
       res.status(404).json({ message: "Property missing" });
@@ -144,7 +205,7 @@ const updateLocations = async (req, res) => {
 
 const particularUpdateProperties = async (req, res) => {
   try {
-    const body = req.body;
+    const body =req.body;
     const check = await  DB_propertyCheck(body);
     if (!check) {
       res.status(404).json({ message: "Property missing" });
@@ -198,7 +259,7 @@ const particularUpdateLocations = async (req, res) => {
 
 const deleteProperties = async (req, res) => {
   try {
-    const { id } = req.query;
+    const { id } =deletePropertiesSchema.parse(req.query);
     const check = await  DB_propertyCheck(body);
     if (!check) {
       res.status(404).json({ message: "Property already missing" });
@@ -213,7 +274,7 @@ const deleteProperties = async (req, res) => {
 
 const deleteCategories = async (req, res) => {
   try {
-    const { id } = req.query;
+    const { id } =deleteCategoriesSchema.parse(req.query);
     const check = await DB_categoryCheck(body);
     if (!check) {
       res.status(404).json({ message: "Property already missing" });
@@ -228,7 +289,7 @@ const deleteCategories = async (req, res) => {
 
 const deleteLocations = async (req, res) => {
   try {
-    const { id } = req.query;
+    const { id } =deleteLocationsSchema.parse(req.query);
     const check = await DB_locationCheck(body);
     if (!check) {
       res.status(404).json({ message: "Property already missing" });
